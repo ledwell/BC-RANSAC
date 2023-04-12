@@ -17,7 +17,7 @@ import numpy as np
 import scipy as nd
 import scipy.ndimage as ndi
 import util
-
+from matplotlib import pyplot as plt
 from PIL import Image
 from itertools import product
 
@@ -72,12 +72,12 @@ def tile(filename, dir_in, dir_out, d):
     for i, j in grid:
         box = (j, i, j+d, i+d)
         out = os.path.join(dir_out, f'{name}_{i}_{j}{ext}')
-        print(f'For Coordinates included within {i}, {j}, {i+d}, {j+d}')
+        #print(f'For Coordinates included within {i}, {j}, {i+d}, {j+d}')
         #SAVE TILE IMAGE INTO TEMP
         img.crop(box).save(out)
-        print(os.path.join(dir_out, f'{name}_{i}_{j}{ext}'))
+        #print(os.path.join(dir_out, f'{name}_{i}_{j}{ext}'))
         temp = cv2.imread(os.path.join(dir_out, f'{name}_{i}_{j}{ext}'))
-        print(f'Coarseness: {coarseness(temp, 5)}')
+        #print(f'Coarseness: {coarseness(temp, 5)}')
 
         #CONTRAST CALCULATION FROM - https://stackoverflow.com/questions/58821130/how-to-calculate-the-contrast-of-an-image
         Y = cv2.cvtColor(temp, cv2.COLOR_BGR2YUV)[:,:,0]
@@ -86,11 +86,11 @@ def tile(filename, dir_in, dir_out, d):
         max = np.max(Y)
         # compute contrast
         contrast = (max-min)/(max+min)
-        print(f'Contrast: {contrast}')
+        #print(f'Contrast: {contrast}')
         
         #SMOOTHNESS CALCULATION FROM - https://stackoverflow.com/questions/24671901/does-there-exist-a-way-to-directly-figure-out-the-smoothness-of-a-digital-imag
         roughness = np.average(np.absolute(ndi.filters.laplace(cv2.imread(os.path.join(dir_out, f'{name}_{i}_{j}{ext}')).astype(float) / 255.0)))
-        print(f'Roughness:{roughness}')
+        #print(f'Roughness:{roughness}')
         
 def computeHomography(pairs):
     """Solves for the homography given any number of pairs of points. Visit
@@ -266,8 +266,67 @@ def RANSAC(point_map, threshold=THRESHOLD, verbose=True):
 
     return homography, bestInliers
 
+def PROSAC(point_map, threshold=THRESHOLD, verbose=True):
+    """Runs the RANSAC algorithm.
 
-def createPointMap(image1, image2, directory, verbose=True):
+    Args:
+        point_map (List[List[List]]): Map of (x, y) points from one image to the
+            another image.
+        threshold (float, optional): The minimum portion of points that should
+            be inliers before the algorithm terminates. Defaults to THRESHOLD.
+        verbose (bool, optional): True if additional information should be
+            printed. Defaults to True.
+
+    Returns:
+        (np.ndarray, set(List[List])): The homography and set of inliers.
+    """
+    if verbose:
+        print(f'Running PROSAC with {len(point_map)} points...')
+    bestInliers = set()
+    homography = None
+    
+    # y = 30% * total matches
+    #subsetPre = 0.3 * len(point_map)
+    
+    #m_points = [[i+j for i in range(subset)] for j in range(2)]
+    #print(m_points)
+    #print ('Length of Points: ', len(point_map))
+    #print ('Subset Precentage Number: ', subsetPre)
+    
+    for i in range(NUM_ITERS):
+        # randomly choose 4 points from the matrix to compute the homography
+        pairs = [point_map[i] for i in np.random.choice(len(point_map), 4)]
+
+        H = computeHomography(pairs)
+        inliers = {(c[0], c[1], c[2], c[3])
+                   for c in point_map if dist(c, H) < 500}
+
+        if verbose:
+            print(f'\x1b[2K\r└──> iteration {i + 1}/{NUM_ITERS} ' +
+                  f'\t{len(inliers)} inlier' + ('s ' if len(inliers) != 1 else ' ') +
+                  f'\tbest: {len(bestInliers)}', end='')
+
+        if len(inliers) > len(bestInliers):
+            bestInliers = inliers
+            homography = H
+            if len(bestInliers) > (len(point_map) * threshold):
+                break
+
+    if verbose:
+        print(f'\nNum matches: {len(point_map)}')
+        print(f'Num inliers: {len(bestInliers)}')
+        print(f'Min inliers: {len(point_map) * threshold}')
+
+    return homography, bestInliers
+
+def lowes_distance(featureMatches):
+    good = []
+    for m,n in featureMatches :
+        if m.distance < 0.7*n.distance :
+            good.append(m)
+    return good
+
+def createPointMap(image1, image2, directory, rtype, verbose=True):
     """Creates a point map of shape (n, 4) where n is the number of matches
     between the two images. Each row contains (x1, y1, x2, y2), where (x1, y1)
     in image1 maps to (x2, y2) in image2.
@@ -307,6 +366,17 @@ def createPointMap(image1, image2, directory, verbose=True):
          kp2[match.trainIdx].pt[0],
          kp2[match.trainIdx].pt[1]] for match in matches
     ])
+    if rtype == 'PROSAC':
+        matches = cv2.BFMatcher().knnMatch(desc1, desc2, k=2)
+        #apply ratio test quality function
+        #lowe's distance algorithm
+        matches = lowes_distance(matches)
+        point_map = np.array([
+            [kp1[match.queryIdx].pt[0],
+            kp1[match.queryIdx].pt[1],
+            kp2[match.trainIdx].pt[0],
+            kp2[match.trainIdx].pt[1]]for match in matches
+        ])
 
     cv2.imwrite(util.OUTPUT_PATH + 'matches.png',
                 util.drawMatches(image1, image2, point_map))
@@ -337,6 +407,7 @@ def main(image1, image2, directory, verbose=True):
         (List[List[List]], set(List[List]), np.ndarray): The computed point map,
             the set of inlier points, and the computed homography
     """
+    rtype = 'PROSAC'
     point_map = None
     if f'{directory}-point_map.csv' in os.listdir(util.POINT_MAPS_PATH):
         if verbose:
@@ -347,19 +418,19 @@ def main(image1, image2, directory, verbose=True):
     else:
         if verbose:
             print('Creating point map...')
-        point_map = createPointMap(image1, image2, directory, verbose=verbose)
-    
-    #TILE ATTEMPT 1
-    tile('1.png', f'input/images/{args.directory}/', f'output/images/{args.directory}/{datetime.now().strftime("%Y-%m-%d-%H%M")}/tiles', 100)
-    
-    #CHECK IMAGES
-    for images in os.listdir(util.OUTPUT_PATH_TILES):
-    # check if the image ends with png
-        if (images.endswith(".png")):
-            print(images)
-    
-    
-    homography, inliers = RANSAC(point_map, verbose=verbose)
+        point_map = createPointMap(image1, image2, directory, rtype, verbose=verbose)
+    if rtype == 'PSSC':
+        #TILE ATTEMPT 1
+        tile('1.png', f'input/images/{args.directory}/', f'output/images/{args.directory}/{datetime.now().strftime("%Y-%m-%d-%H%M")}/tiles', 100)
+        #CHECK IMAGES
+        #for images in os.listdir(util.OUTPUT_PATH_TILES):
+        # check if the image ends with png
+            #if (images.endswith(".png")):
+                #print(images)
+    if rtype == 'RANSAC':
+        homography, inliers = RANSAC(point_map, verbose=verbose)
+    if rtype == 'PROSAC':
+        homography, inliers = PROSAC(point_map, verbose=verbose)
 
     cv2.imwrite(util.OUTPUT_PATH + 'inlier_matches.png',
                 util.drawMatches(image1, image2, point_map, inliers))
