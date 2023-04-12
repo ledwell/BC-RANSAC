@@ -284,38 +284,51 @@ def PROSAC(point_map, threshold=THRESHOLD, verbose=True):
         print(f'Running PROSAC with {len(point_map)} points...')
     bestInliers = set()
     homography = None
-    
-    # y = 30% * total matches
-    #subsetPre = 0.3 * len(point_map)
-    
-    #m_points = [[i+j for i in range(subset)] for j in range(2)]
-    #print(m_points)
-    #print ('Length of Points: ', len(point_map))
-    #print ('Subset Precentage Number: ', subsetPre)
-    
-    for i in range(NUM_ITERS):
-        # randomly choose 4 points from the matrix to compute the homography
-        pairs = [point_map[i] for i in np.random.choice(len(point_map), 4)]
-
-        H = computeHomography(pairs)
-        inliers = {(c[0], c[1], c[2], c[3])
-                   for c in point_map if dist(c, H) < 500}
-
-        if verbose:
-            print(f'\x1b[2K\r└──> iteration {i + 1}/{NUM_ITERS} ' +
-                  f'\t{len(inliers)} inlier' + ('s ' if len(inliers) != 1 else ' ') +
-                  f'\tbest: {len(bestInliers)}', end='')
-
-        if len(inliers) > len(bestInliers):
-            bestInliers = inliers
-            homography = H
-            if len(bestInliers) > (len(point_map) * threshold):
-                break
+    pre = 0.5
+    i = 0
+    j = 0
+    MIN_INLIERS = 0
+    # two terminations: max number iterations or min number of inliers
+    while (i < NUM_ITERS) or (MIN_INLIERS == len(point_map) * threshold) :
+        #y = 30% * total matches
+        subsetPre = pre * len(point_map)
+        subsetPre = int(subsetPre)
+        if subsetPre < len(point_map):
+            # create subset
+            j= 0
+            subset = [point_map[j] for j in range(j, int(subsetPre-1))]
+            # choose 4 points from the subset matrix to compute the homography
+            pairs = [subset[i] for i in range(i, i+4)]
+            #homography
+            H = computeHomography(pairs)
+            inliers = {(c[0], c[1], c[2], c[3])
+                       for c in subset if dist(c, H) < 500}
+            #print information
+            if verbose:
+                print(f'\x1b[2K\r└──> iteration {i + 1}/{NUM_ITERS} ' +
+                      f'\t{len(inliers)} inlier' + ('s ' if len(inliers) != 1 else ' ') +
+                      f'\tbest: {len(bestInliers)}', end='')
+            MIN_INLIERS = len(inliers)
+            # check is lenght of inliers increased
+            if len(inliers) > len(bestInliers):
+                bestInliers = inliers
+                MIN_INLIERS = len(bestInliers)
+                homography = H
+                # check if inliers is greater than threshold
+                if len(bestInliers) > (len(point_map) * threshold):
+                    break
+            # if inliers is less than, increase subset dataset using precentage
+            if MIN_INLIERS < (len(point_map) * threshold):
+                pre = pre + 0.1
+            i = i + 1
+        else:
+            break
 
     if verbose:
-        print(f'\nNum matches: {len(point_map)}')
+        print(f'\nTotal Num matches: {len(point_map)}')
         print(f'Num inliers: {len(bestInliers)}')
         print(f'Min inliers: {len(point_map) * threshold}')
+        print(f'Subset matches: {len(subset)}')
 
     return homography, bestInliers
 
@@ -359,7 +372,7 @@ def createPointMap(image1, image2, directory, rtype, verbose=True):
     if verbose:
         print('Determining matches...')
     matches = cv2.BFMatcher(cv2.NORM_L2, True).match(desc1, desc2)
-
+    #print("Len Matches: ", len(matches))
     point_map = np.array([
         [kp1[match.queryIdx].pt[0],
          kp1[match.queryIdx].pt[1],
@@ -367,10 +380,14 @@ def createPointMap(image1, image2, directory, rtype, verbose=True):
          kp2[match.trainIdx].pt[1]] for match in matches
     ])
     if rtype == 'PROSAC':
+        #https://opencv24-python-tutorials.readthedocs.io/en/latest/py_tutorials/py_feature2d/py_matcher/py_matcher.html
         matches = cv2.BFMatcher().knnMatch(desc1, desc2, k=2)
+        #print("Len Matches: ", len(matches))
         #apply ratio test quality function
         #lowe's distance algorithm
+        #https://stackoverflow.com/questions/51197091/how-does-the-lowes-ratio-test-work
         matches = lowes_distance(matches)
+        matches = sorted(matches, key = lambda x:x.distance)
         point_map = np.array([
             [kp1[match.queryIdx].pt[0],
             kp1[match.queryIdx].pt[1],
@@ -430,6 +447,7 @@ def main(image1, image2, directory, verbose=True):
     if rtype == 'RANSAC':
         homography, inliers = RANSAC(point_map, verbose=verbose)
     if rtype == 'PROSAC':
+        #https://willguimont.github.io/cs/2019/12/26/prosac-algorithm.html
         homography, inliers = PROSAC(point_map, verbose=verbose)
 
     cv2.imwrite(util.OUTPUT_PATH + 'inlier_matches.png',
