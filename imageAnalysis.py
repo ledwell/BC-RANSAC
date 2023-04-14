@@ -116,8 +116,8 @@ def createCMV(filename, dir_in, dir_out, d, rtype):
         img.crop(box).save(out)
         temp = cv2.imread(os.path.join(dir_out, f'{name}_{i}_{j}{ext}'))
         contrastValue = float(contrast(temp)/255.0)
-        if contrastValue == math.inf:
-            contrastValue = 2
+        if contrastValue == np.inf:
+            contrastValue = 0
         if rtype == 1:
             #BLUR TAKEN FROM https://stackoverflow.com/questions/28717054/calculating-sharpness-of-an-image
             canny = cv2.Canny(temp, 50, 250)
