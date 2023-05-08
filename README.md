@@ -13,7 +13,13 @@
 - glob
 ### Installation
 #### Windows
+Download the zip file from GitHub: https://github.com/ledwell/seniorProject
+
+Unzip the zip file to your project directory
 #### Linux
+Git clone the repository.
+
+`https://github.com/ledwell/seniorProject`
 #### macOS
 ## Usage
 ## Additional Notes
