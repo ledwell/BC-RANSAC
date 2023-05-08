@@ -5,7 +5,16 @@
 - macOS
 ## Getting Started
 ### Prerequisites
+- Python 3.7.0 or later
+- OpenCV
+- NumPY
+- Matplotlib
+- SciPy
+- glob
 ### Installation
+#### Windows
+#### Linux
+#### macOS
 ## Usage
 ## Additional Notes
 ## Refernece 
