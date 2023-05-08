@@ -19,8 +19,8 @@ Unzip the zip file to your project directory.
 #### Linux
 Git clone the repository.
 
-` git clone https://github.com/ledwell/seniorProject.git`
+`git clone https://github.com/ledwell/seniorProject.git`
 #### macOS
 ## Usage
 ## Additional Notes
-## Refernece 
+## Reference 
