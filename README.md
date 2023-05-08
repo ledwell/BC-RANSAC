@@ -24,6 +24,7 @@ Git clone the repository.
 ## Usage
 1. Here is an example of the usage. _01_ is the directory number within the image directory that contains image pairs. _-d_ indicates that the directory number is next.
 Directory name: `input/images/01/1.png`
+
 `python imageAnalysis.py -d 01`
 ## Additional Notes
 ## Reference 
