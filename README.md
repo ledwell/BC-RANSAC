@@ -1,8 +1,8 @@
 #
-# Homography Estimation - Comparison of RANSAC and its Variants
+# **Homography Estimation - Comparison of RANSAC and its Variants**
 #
-# Operating System 
+## Operating System 
 #
-## Windows
-## Linux
-## macOS
+- Windows
+- Linux
+- macOS
