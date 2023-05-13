@@ -22,6 +22,9 @@ Git clone the repository.
 
 `git clone https://github.com/ledwell/seniorProject.git`
 #### macOS
+Git clone the repository. 
+
+`git clone https://github.com/ledwell/seniorProject.git`
 ## Usage
 1. Here is an example of the usage. _01_ is the directory number within the image directory that contains image pairs. _-d_ indicates that the directory number is next.
 Directory name: `input/images/01/1.png`
