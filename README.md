@@ -36,9 +36,15 @@ Directory name: `input/images/01/1.png`
 ## Additional Notes
 ## Reference 
 [1] https://opencv24-python-tutorials.readthedocs.io/en/latest/py_tutorials/py_feature2d/py_matcher/py_matcher.html
+
 [2] https://stackoverflow.com/questions/51197091/how-does-the-lowes-ratio-test-work
+
 [3] http://6.869.csail.mit.edu/fa12/lectures/lecture13ransac/lecture13ransac.pdf
+
 [4] https://stackoverflow.com/questions/28717054/calculating-sharpness-of-an-image
+
 [5] https://stackoverflow.com/questions/24671901/does-there-exist-a-way-to-directly-figure-out-the-smoothness-of-a-digital-imag
+
 [6] https://stackoverflow.com/questions/58821130/how-to-calculate-the-contrast-of-an-image
+
 [7] https://github.com/MarshalLeeeeee/Tamura-In-Python/blob/master/tamura-numpy.py
