@@ -1,6 +1,8 @@
 # **Homography Estimation - Comparison of RANSAC and its Variants**
 ## About this Project
 Structure from Motion (SFM) is the process of estimating a 3D model from a set of 2D images. SFM can be used in applications such as 3D scannning and visualization. We focused our reseached on SFM in UAV application. However, due to the scope of our project being to large compared to the time we had, we decided to consider Homography, which can be considered a part of the SFM pipeline. Homography relates the transformation between two views in the same planer surface. These steps are used in the first few steps of the SFM pipeline.
+
+
 ## Operating System 
 - Windows
 - Linux
@@ -35,16 +37,18 @@ Directory name: `input/images/01/1.png`
 ![Example of RANSAC in Homography](https://github.com/ledwell/seniorProject/blob/main/output/images/02/RANSAC_inlier_matches.png)
 ## Additional Notes
 ## Reference 
-[1] https://opencv24-python-tutorials.readthedocs.io/en/latest/py_tutorials/py_feature2d/py_matcher/py_matcher.html
+[1] https://github.com/dastratakos/Homography-Estimation
 
-[2] https://stackoverflow.com/questions/51197091/how-does-the-lowes-ratio-test-work
+[2] https://opencv24-python-tutorials.readthedocs.io/en/latest/py_tutorials/py_feature2d/py_matcher/py_matcher.html
 
-[3] http://6.869.csail.mit.edu/fa12/lectures/lecture13ransac/lecture13ransac.pdf
+[3] https://stackoverflow.com/questions/51197091/how-does-the-lowes-ratio-test-work
 
-[4] https://stackoverflow.com/questions/28717054/calculating-sharpness-of-an-image
+[4] http://6.869.csail.mit.edu/fa12/lectures/lecture13ransac/lecture13ransac.pdf
 
-[5] https://stackoverflow.com/questions/24671901/does-there-exist-a-way-to-directly-figure-out-the-smoothness-of-a-digital-imag
+[5] https://stackoverflow.com/questions/28717054/calculating-sharpness-of-an-image
 
-[6] https://stackoverflow.com/questions/58821130/how-to-calculate-the-contrast-of-an-image
+[6] https://stackoverflow.com/questions/24671901/does-there-exist-a-way-to-directly-figure-out-the-smoothness-of-a-digital-imag
 
-[7] https://github.com/MarshalLeeeeee/Tamura-In-Python/blob/master/tamura-numpy.py
+[7] https://stackoverflow.com/questions/58821130/how-to-calculate-the-contrast-of-an-image
+
+[8] https://github.com/MarshalLeeeeee/Tamura-In-Python/blob/master/tamura-numpy.py
