@@ -1,5 +1,6 @@
 # **Homography Estimation - Comparison of RANSAC and its Variants**
 ## About this Project
+Structure from Motion (SFM) is the process of estimating a 3D model from a set of 2D images. SFM can be used in applications such as 3D scannning and visualization. We focused our reseached on SFM in UAV application. However, due to the scope of our project being to large compared to the time we had, we decided to consider Homography, which can be considered a part of the SFM pipeline. Homography relates the transformation between two views in the same planer surface. These steps are used in the first few steps of the SFM pipeline.
 ## Operating System 
 - Windows
 - Linux
