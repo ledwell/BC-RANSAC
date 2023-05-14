@@ -35,8 +35,8 @@ Directory name: `input/images/01/1.png`
 ![Example of RANSAC in Homography](https://github.com/ledwell/seniorProject/blob/main/output/images/02/RANSAC_inlier_matches.png)
 ## Additional Notes
 ## Reference 
-[1] ![Source 1](https://opencv24-python-tutorials.readthedocs.io/en/latest/py_tutorials/py_feature2d/py_matcher/py_matcher.html)
-[2] ![Source 2](https://stackoverflow.com/questions/51197091/how-does-the-lowes-ratio-test-work)
+[1] (https://opencv24-python-tutorials.readthedocs.io/en/latest/py_tutorials/py_feature2d/py_matcher/py_matcher.html)
+[2] (https://stackoverflow.com/questions/51197091/how-does-the-lowes-ratio-test-work)
 [3] ![Source 3](http://6.869.csail.mit.edu/fa12/lectures/lecture13ransac/lecture13ransac.pdf)
 [4] ![Source 4](https://stackoverflow.com/questions/28717054/calculating-sharpness-of-an-image)
 [5] ![Source 5](https://stackoverflow.com/questions/24671901/does-there-exist-a-way-to-directly-figure-out-the-smoothness-of-a-digital-imag)
