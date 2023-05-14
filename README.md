@@ -32,6 +32,6 @@ Directory name: `input/images/01/1.png`
 
 `python imageAnalysis.py -d 01`
 
-!(https://github.com/ledwell/seniorProject/blob/main/output/images/02/RANSAC_inlier_matches.png)
+![Example of RANSAC in Homography](https://github.com/ledwell/seniorProject/blob/main/output/images/02/RANSAC_inlier_matches.png)
 ## Additional Notes
 ## Reference 
