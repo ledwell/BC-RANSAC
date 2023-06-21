@@ -81,7 +81,6 @@ def coarseness(image, kmax):
 
 	return fcrs
 
-#THIS IS A COMMENT
 def sigmoid(x):
     return 1 / (1 + math.exp(-0.65 * (x - 16.5)))
 
